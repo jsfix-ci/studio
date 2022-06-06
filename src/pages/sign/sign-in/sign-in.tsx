@@ -7,6 +7,8 @@ import { getAnonymousToken } from 'services/resources/token';
 
 import { setStorageItem } from 'shared/utils/storage';
 
+import Session from 'supertokens-auth-react/recipe/session'
+
 import * as S from './styles';
 
 export const SignIn = () => {
@@ -25,7 +27,8 @@ export const SignIn = () => {
   )
 
   const onLogin = useCallback(async () => {
-    const token = await getAnonymousToken();
+    const userId = await Session.getUserId();
+    const token = await getAnonymousToken(userId);
 
     if (token) {
       setStorageItem('TOKEN', token);

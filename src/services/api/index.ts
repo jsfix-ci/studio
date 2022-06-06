@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Session from "supertokens-auth-react/recipe/session";
 
 import jwt_decode from "jwt-decode";
 import { getAnonymousToken } from 'services/resources/token';
@@ -8,6 +9,8 @@ import { getStorageItem, setStorageItem } from 'shared/utils/storage';
 const api = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL
 });
+Session.addAxiosInterceptors(api);
+
 
 type TToken = {
   exp: number;
@@ -43,7 +46,8 @@ api.interceptors.response.use(
     let token = getStorageItem('TOKEN');
 
     if (token && isTokenExpired(token)) {
-      token = await getAnonymousToken()
+      const userId = await Session.getUserId()
+      token = await getAnonymousToken(userId)
       setStorageItem('TOKEN', token);
 
       error.config.headers['Authorization'] = 'Bearer ' + token;
